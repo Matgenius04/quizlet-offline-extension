@@ -1,0 +1,20 @@
+{
+    "name": "Quizlet Offline Study",
+    "version": "1",
+    "description": "Offline Quizlet studying tool.",
+    "manifest_version": 2,
+    "permissions": ["storage","declarativeContent","activeTab"],
+    "content_scripts": [
+        {
+          "matches": ["http://quizlet.com/*","https://quizlet.com/*"],
+          "exclude_matches":["http://*.quizlet.com/*","https://*.quizlet.com/*","http://quizlet.com/latest","https://quizlet.com/latest"],
+          "js": ["content.js"]
+        }
+      ],
+    "page_action": {
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "scripts": ["background.js"]
+    }
+}
