@@ -7,12 +7,12 @@
     "content_scripts": [
         {
           "matches": ["http://quizlet.com/*","https://quizlet.com/*"],
-          "exclude_matches":["http://*.quizlet.com/*","https://*.quizlet.com/*","http://quizlet.com/latest","https://quizlet.com/latest"],
+          "exclude_matches":["http://*.quizlet.com/","https://*.quizlet.com/","http://quizlet.com/latest","https://quizlet.com/latest"],
           "js": ["content.js"]
         }
       ],
     "page_action": {
-        "default_popup": "popup.html"
+        "default_popup": "popup/popup.html"
     },
     "background": {
         "scripts": ["background.js"]
