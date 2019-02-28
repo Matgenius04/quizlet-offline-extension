@@ -1,11 +1,28 @@
 window.addEventListener('load',()=>{
-    let x;
+  let x = {
+    name: [],
+    set: []
+  };
   let addSet = function() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {add: 'set'},function(response) {
-          x[1].terms = response.terms;
-          x[1].definitions = response.definitions;
-          console.log(x[1]);
+          let obj = {
+            terms: [],
+            definitions: []
+          };
+      for (let n=0;n<response.terms.length;n++) {
+      obj.terms.push(response.terms[n]);
+      obj.definitions.push(response.definitions[n]);
+}      
+      if (x.name.includes(response.name) == true){
+        console.log('updating set')
+        let existingPos = `${x.name.indexOf(response.name)}`
+        x.set[Number(existingPos)] = obj;
+      } else {
+        x.name.push(response.name);
+        x.set.push(obj);
+      }
+      console.log(x)
         });
     });
 }
@@ -20,4 +37,7 @@ window.addEventListener('load',()=>{
           }
         });
       });
+})
+window.addEventListener('onunload', ()=>{
+  
 })
