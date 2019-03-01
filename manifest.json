@@ -7,7 +7,7 @@
     "content_scripts": [
         {
           "matches": ["http://quizlet.com/*","https://quizlet.com/*"],
-          "exclude_matches":["http://*.quizlet.com/","https://*.quizlet.com/","http://quizlet.com/latest","https://quizlet.com/latest"],
+          "exclude_matches":["http://*.quizlet.com/","https://*.quizlet.com/","http://quizlet.com/latest","https://quizlet.com/latest","http://quizlet.com/live","https://quizlet.com/live"],
           "js": ["content.js","jquery.js"]
         }
       ],
