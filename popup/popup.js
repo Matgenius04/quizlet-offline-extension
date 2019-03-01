@@ -1,8 +1,32 @@
+let db;
+let x;
+let quizletObjectStore;
+    // x = {
+    //   number: 0,
+    //   name: [],
+    //   set: []
+    // }
 window.addEventListener('load',()=>{
-  let x = {
-    name: [],
-    set: []
-  };
+  let request = indexedDB.open('sets',1);
+  request.onerror = event => {
+    alert("Database error: " + event.target.errorCode);
+  }
+  request.onsuccess = event => {
+    db = event.target.result;
+    db.transaction('x','readwrite').objectStore('x').getAll().onsuccess = event => {
+      console.log(event.target.result);
+    };
+  }
+  // request.onupgradeneeded = event => {
+  //   db = event.target.result;
+  //   console.log(db);
+  //   let objectStore = db.createObjectStore("x", {keyPath: "number"});
+  //   objectStore.transaction.oncomplete = event=>{
+  //   quizletObjectStore = db.transaction("x","readwrite").objectStore("x");
+  //   quizletObjectStore.add(x);
+  //   }
+  // }
+
   let addSet = function() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {add: 'set'},function(response) {
