@@ -1,5 +1,6 @@
 let db;
 let x;
+let setI = 0;
 let quizletObjectStore;
 x = {
   name: [],
@@ -48,6 +49,7 @@ window.addEventListener('load', () => {
           if (x.set == undefined) {
             x.set = [];
           }
+          loadedSet();
           // console.log(x);
         };
       }
@@ -80,6 +82,7 @@ window.addEventListener('load', () => {
           let existingPos = `${x.name.indexOf(response.name)}`
           x.set[Number(existingPos)] = obj;
         }
+        loadedSet()
         // console.log(x)
       });
     });
@@ -109,3 +112,19 @@ window.addEventListener('unload', () => {
   let background = chrome.extension.getBackgroundPage();
   background.altEval(x) //send data for background script to process
 })
+
+// Creates the dropdown menu
+function loadedSet() {
+  let inner = "";
+  for (let i = 0; i < x.name.length; i++) {
+    inner = inner+`<option value=${i}>${x.name[i]}</option>}`
+  }
+  document.getElementById("set").innerHTML = inner
+}
+
+function changeI() {
+  setI = parseInt(document.getElementById("set").value);
+  console.log(setI);
+}
+
+document.getElementById("changeI").addEventListener("click", changeI)
