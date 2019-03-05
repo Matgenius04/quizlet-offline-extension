@@ -9,9 +9,27 @@
     <h3>quizlet</h3>
     <select id="set">
     </select>
+    <button id="flashcards-button">Flashcards</button>
+    <button id="learn-button">Learn</button>
     <button id="changeI">Choose set</button>
     <div id="flashcard-wrapper">
         <div id="flashcards"></div>
+    </div>
+    <div id="learn-wrapper" hidden>
+      <div id="learn-questions">
+        <p id="progress"></p>
+        <p id="question"></p>
+        <div id="choices">
+          <button></button>
+          <button></button>
+          <button></button>
+          <button></button>
+        </div>
+        <input type="text" id="text"></input>
+      </div>
+      <p id="correct" hidden></p>
+        <p id="wrong" hidden></p>
+      </div>
     </div>
     <script src="popup.js"></script>
 </body>

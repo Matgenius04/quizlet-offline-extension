@@ -141,6 +141,12 @@ let studyOptions = () => {
   if (document.getElementById('flashcards-option')){
     document.getElementById('flashcards-option').remove()
   }
+  if (document.getElementById('learn-option')){
+    document.getElementById('learn-option').remove()
+  }
+  if (document.getElementById('matching-option')){
+    document.getElementById('matching-option').remove()
+  }
   if (document.getElementById('flashcard')){
       document.getElementById('flashcard').remove()
   }
@@ -154,12 +160,22 @@ let studyOptions = () => {
     window.removeEventListener('keydown',function (e) {sigh(e);},false)
     keydownListener = false;
   }
-  let options = document.createElement('button');
+  let flashCardOption = document.createElement('button');
+  let matchingOption = document.createElement('button');
+  let learnOption = document.createElement('button');
   //flashcards option
-  options.innerHTML = "Flashcards";
-  options.id = 'flashcards-option';
-  options.onclick = ()=>{flashCardsOption()};
-  document.getElementsByTagName('body')[0].appendChild(options)
+  flashCardOption.innerHTML = "Flashcards";
+  learnOption.innerHTML = "Learn"
+  matchingOption.innerHTML = "Matching";
+  flashCardOption.id = 'flashcards-option';
+  learnOption.id = 'learn-option';
+  matchingOption.id = 'matching-option'
+  flashCardOption.onclick = ()=>{flashCardMode()};
+  learnOption.onclick = ()=>{learnMode()};
+  matchingOption.onclick = ()=>{matchingMode()};
+  document.getElementsByTagName('body')[0].appendChild(flashCardOption);
+  document.getElementsByTagName('body')[0].appendChild(learnOption);
+  document.getElementsByTagName('body')[0].appendChild(matchingOption);
   //end of flashcards option
 }
 //FLASHCARDS
@@ -194,7 +210,16 @@ let studyOptions = () => {
     flashcard.style = `transform: rotateX(180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white;`;
     setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; padding: 0px; position:relative; transform:rotateX(180deg);">${string}<h3>`;},3*animTime/10)
   }
-let flashCardsOption = () => {
+let flashCardMode = () => {
+  if (document.getElementById('flashcards-option')){
+    document.getElementById('flashcards-option').remove()
+  }
+  if (document.getElementById('learn-option')){
+    document.getElementById('learn-option').remove()
+  }
+  if (document.getElementById('matching-option')){
+    document.getElementById('matching-option').remove()
+  }
   console.log('flashcard option selected')
   currentTermIndex = 0;
   flashCardShow(x.set[setI].terms[currentTermIndex]);
@@ -263,3 +288,86 @@ let sigh = (e) => {
   })
 }
 //END FLASHCARDS
+function learnMode() {
+  document.getElementById("learn-wrapper").hidden = false;
+  if (document.getElementById('flashcards-option')){
+    document.getElementById('flashcards-option').remove()
+  }
+  if (document.getElementById('learn-option')){
+    document.getElementById('learn-option').remove()
+  }
+  if (document.getElementById('matching-option')){
+    document.getElementById('matching-option').remove()
+  }
+  doLearnQ();
+}
+
+function doLearnQ() {
+  document.getElementById("learn-questions").hidden = false;
+  document.getElementById("correct").hidden = true;
+  document.getElementById("wrong").hidden = true;
+  let qs = [];
+  let progress = 0;
+  let questions = [];
+  for (let i = 0; i < x.set[setI].terms.length; i++) {
+    questions.push({
+      q: x.set[setI].terms[i],
+      a: x.set[setI].definitions[i],
+      amt: 0
+    });
+  }
+  let qi = randomI(questions);
+  document.getElementById("question").innerHTML = questions[qi].q;
+  let choices = document.getElementById("choices");
+  choices.hidden = false
+  let c = [questions[qi].a];
+  for (let i = 0; i < 3; i++) {
+    if (Math.random() < 0.5) {
+      c.push(questions[randomI(questions)].a);
+    } else {
+      c.unshift(questions[randomI(questions)].a);
+    }
+  }
+
+  for (let i = 1; i < choices.childNodes.length; i += 2) {
+    choices.childNodes[i].innerHTML = c.pop();
+    if (choices.childNodes[i].innerHTML == questions[qi].a) {
+      choices.childNodes[i].removeEventListener("click", () => {
+        learnRight();
+      });
+      choices.childNodes[i].addEventListener("click", () => {
+        learnRight();
+      })
+    } else {
+      choices.childNodes[i].removeEventListener("click", () => {
+        learnWrong(pq);
+      });
+      choices.childNodes[i].addEventListener("click", () => {
+        learnWrong(questions[qi].a);
+      })
+    }
+  }
+}
+
+function learnRight() {
+  let e = document.getElementById("correct");
+  document.getElementById("learn-questions").hidden = true;
+  e.hidden = false;
+  let compliments = ["Good job!", "CORRECT!", "You seem to have proven me wrong", "You're doing great!"]
+  e.innerHTML = compliments[randomI(compliments)];
+  setTimeout(doLearnQ, 2000)
+}
+
+function learnWrong(a) {
+  let e = document.getElementById("wrong");
+  document.getElementById("learn-questions").hidden = true;
+  e.hidden = false;
+  let compliments = ["You seem to have proven me right", "Thats quite unfortunate", "OOF", "WRONG", "*insert wrong sound here*"];
+  e.innerHTML = compliments[randomI(compliments)]+", the answer was actually "+a;
+  setTimeout(doLearnQ, 5000);
+  pq = a;
+}
+
+function randomI(a) {
+  return Math.floor(Math.random() * a.length);
+}
