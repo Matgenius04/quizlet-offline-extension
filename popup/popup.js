@@ -3,6 +3,7 @@ let x;
 let setI = 0;
 let currentTermIndex;
 let quizletObjectStore;
+let keydownListener;
 const animTime = 500; //milleseconds
 x = {
   name: [],
@@ -134,12 +135,34 @@ function changeI() {
 
 document.getElementById("changeI").addEventListener("click", changeI)
 
+//lists all of the studying options
 let studyOptions = () => {
+  //remove all previous studying html
+  if (document.getElementById('flashcards-option')){
+    document.getElementById('flashcards-option').remove()
+  }
+  if (document.getElementById('flashcard')){
+      document.getElementById('flashcard').remove()
+  }
+  if (document.getElementById('next')){
+    document.getElementById('next').remove()
+  }
+  if (document.getElementById('back')){
+    document.getElementById('back').remove();
+  }
+  if (keydownListener==true) {
+    window.removeEventListener('keydown',function (e) {sigh(e);},false)
+    keydownListener = false;
+  }
   let options = document.createElement('button');
+  //flashcards option
   options.innerHTML = "Flashcards";
+  options.id = 'flashcards-option';
   options.onclick = ()=>{flashCardsOption()};
   document.getElementsByTagName('body')[0].appendChild(options)
+  //end of flashcards option
 }
+//FLASHCARDS
   let flashcard = document.createElement('div');
   let term = true;
   flashcard.onclick = ()=>{
@@ -179,25 +202,64 @@ let flashCardsOption = () => {
   let back = document.createElement('button');
   let nextCard = ()=>{
     currentTermIndex +=1;
-    console.log(currentTermIndex)    
+    currentTermIndex==x.set[setI].terms.length ? prevCard(): null;
     document.getElementById('flashcard').style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
   flashCardShow(x.set[setI].terms[currentTermIndex]);
   }
   let prevCard = ()=>{
     currentTermIndex += -1;
+    currentTermIndex==-1 ? nextCard(): null;
     flashcard.style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
     flashCardShow(x.set[setI].terms[currentTermIndex]);
   }
   window.innerHeight/3
   next.style = `height: 40px; width: 40px; border-radius: 20px;position:relative;margin-right:0px;margin-left:${window.innerHeight/3}px;margin-top:15px;margin-bottom:15px;`;
   next.innerHTML = ">";
+  next.id = 'next';
   next.onclick = ()=>{nextCard();}
   back.style = `height: 40px; width: 40px; border-radius: 20px;position:relative;margin-right:0px;margin-left:${window.innerHeight/3}px;margin-top:15px;margin-bottom:15px;`;
   back.innerHTML = "<";
+  back.id = 'back';
   back.onclick = ()=>{prevCard()}
   document.getElementById('flashcard-wrapper').appendChild(back);
   document.getElementById('flashcard-wrapper').appendChild(next);
-  window.addEventListener('keypress',(e)=>{
-    alert(e)
+
+let sigh = (e) => {
+  keydownListener = true;
+      if(e.keyCode==37){
+        //left
+        // alert('left') //for testing
+        prevCard()
+      } else if (e.keyCode==38){
+        //up
+        // alert('up') //for testing
+        if (term == true){
+          flashCardFlip(x.set[setI].definitions[currentTermIndex]);
+          setTimeout(()=>{term = false;},10)
+        }
+        if (term == false){
+          flashCardShow(x.set[setI].terms[currentTermIndex],true);
+          setTimeout(()=>{term = true;},10)
+        }
+      } else if (e.keyCode==39){
+        //right
+        // alert('right') //for testing
+        nextCard()
+      } else if (e.keyCode==40){
+        //down
+        // alert('down') //for testing
+        if (term == true){
+          flashCardFlip(x.set[setI].definitions[currentTermIndex]);
+          setTimeout(()=>{term = false;},10)
+        }
+        if (term == false){
+          flashCardShow(x.set[setI].terms[currentTermIndex],true);
+          setTimeout(()=>{term = true;},10)
+        }
+      }
+  }
+  window.addEventListener('keydown',function (e){
+    sigh(e);
   })
 }
+//END FLASHCARDS
