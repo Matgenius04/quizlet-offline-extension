@@ -380,3 +380,5 @@ function randomI(a) {
   return Math.floor(Math.random() * a.length);
 }
 //END LEARN MODE
+
+//MATCHING MODE
