@@ -1,7 +1,9 @@
 let db;
 let x;
 let setI = 0;
+let currentTermIndex;
 let quizletObjectStore;
+const animTime = 500; //milleseconds
 x = {
   name: [],
   set: []
@@ -56,69 +58,7 @@ window.addEventListener('load', () => {
     }
   }
   //INDEXEDDB END
-   function flipString(aString) {
-    var last = aString.length - 1;
-    var result = new Array(aString.length)
-    for (var i = last; i >= 0; --i) {
-     var c = aString.charAt(i)
-     var r = flipTable[c]
-     result[last - i] = r != undefined ? r : c
-    }
-    return result.join('')
-   }
-   var flipTable = {
-   a : '\u0250',
-   b : 'q',
-   c : '\u0254', 
-   d : 'p',
-   e : '\u01DD',
-   f : '\u025F', 
-   g : '\u0183',
-   h : '\u0265',
-   i : '\u0131', 
-   j : '\u027E',
-   k : '\u029E',
-   //l : '\u0283',
-   m : '\u026F',
-   n : 'u',
-   r : '\u0279',
-   t : '\u0287',
-   v : '\u028C',
-   w : '\u028D',
-   y : '\u028E',
-   '.' : '\u02D9',
-   '[' : ']',
-   '(' : ')',
-   '{' : '}',
-   '?' : '\u00BF',
-   '!' : '\u00A1',
-   "\'" : ',',
-   '<' : '>',
-   '_' : '\u203E',
-   ';' : '\u061B',
-   '\u203F' : '\u2040',
-   '\u2045' : '\u2046',
-   '\u2234' : '\u2235',
-   '\r' : '\n' 
-   }
-   for (i in flipTable) {
-     flipTable[flipTable[i]] = i
-   }
 
-  let flashcard = document.createElement('div');
-  let flashCardShow = string => {
-    flashcard.innerHTML = `<h3 style="margin:auto;width:50%;text-align: center; padding: 10px; position:relative;">${string}<h3>`;
-    flashcard.style = "transform: rotate3d(0);height:100px;width:200px;";
-    document.getElementById('flashcard-wrapper').appendChild(flashcard);
-  }
-  let flashCardFlip = string => {
-    // flippedString = flipString(string.toLowerCase())
-    flashcard.style = "transform: rotate3d(1,0, 0, 0.50turn);transform: rotate(180deg); transition-duration: 3s;height:100px;width:200px;";
-    setTimeout(()=>{flashcard.innerHTML = `<h3 style="margin:auto;width:50%;text-align: center; padding: 10px; position:relative;">${string}<h3>`;},900)
-  }
-
-flashCardShow('test')
-setTimeout(()=>{flashCardFlip('testing')},3000)
 
   //add set on quizlet
   let addSet = function () {
@@ -189,6 +129,75 @@ function loadedSet() {
 function changeI() {
   setI = parseInt(document.getElementById("set").value);
   console.log(setI);
+  studyOptions();
 }
 
 document.getElementById("changeI").addEventListener("click", changeI)
+
+let studyOptions = () => {
+  let options = document.createElement('button');
+  options.innerHTML = "Flashcards";
+  options.onclick = ()=>{flashCardsOption()};
+  document.getElementsByTagName('body')[0].appendChild(options)
+}
+  let flashcard = document.createElement('div');
+  let term = true;
+  flashcard.onclick = ()=>{
+    if (term == true){
+      flashCardFlip(x.set[setI].definitions[currentTermIndex]);
+      setTimeout(()=>{term = false;},10)
+    }
+    if (term == false){
+      flashCardShow(x.set[setI].terms[currentTermIndex],true);
+      setTimeout(()=>{term = true;},10)
+    }
+  }
+  let flashCardShow = (string,transition) => {
+    flashcard.id = 'flashcard';
+    if (transition==true) {
+      flashcard.style = `transform: none; transition-duration:${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white;`;
+      setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; position:relative;">${string}<h3>`;},3*animTime/10)
+    } else if (transition==false){
+      flashcard.innerHTML = `<h3 style="text-align: center; position:relative;">${string}<h3>`;
+      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white;`;
+    } else {
+      flashcard.innerHTML = `<h3 style="text-align: center; position:relative;">${string}<h3>`;
+      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white;`;
+    document.getElementById('flashcards').appendChild(flashcard)
+  };
+  }
+  let flashCardFlip = string => {
+    // flippedString = flipString(string.toLowerCase())
+    flashcard.style = `transform: rotateX(180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white;`;
+    setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; padding: 0px; position:relative; transform:rotateX(180deg);">${string}<h3>`;},3*animTime/10)
+  }
+let flashCardsOption = () => {
+  console.log('flashcard option selected')
+  currentTermIndex = 0;
+  flashCardShow(x.set[setI].terms[currentTermIndex]);
+  let next = document.createElement('button');
+  let back = document.createElement('button');
+  let nextCard = ()=>{
+    currentTermIndex +=1;
+    console.log(currentTermIndex)    
+    document.getElementById('flashcard').style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
+  flashCardShow(x.set[setI].terms[currentTermIndex]);
+  }
+  let prevCard = ()=>{
+    currentTermIndex += -1;
+    flashcard.style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
+    flashCardShow(x.set[setI].terms[currentTermIndex]);
+  }
+  window.innerHeight/3
+  next.style = `height: 40px; width: 40px; border-radius: 20px;position:relative;margin-right:0px;margin-left:${window.innerHeight/3}px;margin-top:15px;margin-bottom:15px;`;
+  next.innerHTML = ">";
+  next.onclick = ()=>{nextCard();}
+  back.style = `height: 40px; width: 40px; border-radius: 20px;position:relative;margin-right:0px;margin-left:${window.innerHeight/3}px;margin-top:15px;margin-bottom:15px;`;
+  back.innerHTML = "<";
+  back.onclick = ()=>{prevCard()}
+  document.getElementById('flashcard-wrapper').appendChild(back);
+  document.getElementById('flashcard-wrapper').appendChild(next);
+  window.addEventListener('keypress',(e)=>{
+    alert(e)
+  })
+}
