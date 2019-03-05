@@ -138,6 +138,8 @@ document.getElementById("changeI").addEventListener("click", changeI)
 //lists all of the studying options
 let studyOptions = () => {
   //remove all previous studying html
+
+  //get rid of buttons
   if (document.getElementById('flashcards-option')){
     document.getElementById('flashcards-option').remove()
   }
@@ -155,6 +157,9 @@ let studyOptions = () => {
   }
   if (document.getElementById('back')){
     document.getElementById('back').remove();
+  }
+  if (document.getElementById('learn-wrapper').hidden == false) {
+    document.getElementById('learn-wrapper').hidden = true;
   }
   if (keydownListener==true) {
     window.removeEventListener('keydown',function (e) {sigh(e);},false)
@@ -178,7 +183,7 @@ let studyOptions = () => {
   document.getElementsByTagName('body')[0].appendChild(matchingOption);
   //end of flashcards option
 }
-//FLASHCARDS
+//FLASHCARDS MODE
   let flashcard = document.createElement('div');
   let term = true;
   flashcard.onclick = ()=>{
@@ -288,8 +293,11 @@ let sigh = (e) => {
   })
 }
 //END FLASHCARDS
+
+//LEARN MODE
 function learnMode() {
   document.getElementById("learn-wrapper").hidden = false;
+  //get rid of option buttons
   if (document.getElementById('flashcards-option')){
     document.getElementById('flashcards-option').remove()
   }
@@ -371,3 +379,4 @@ function learnWrong(a) {
 function randomI(a) {
   return Math.floor(Math.random() * a.length);
 }
+//END LEARN MODE
