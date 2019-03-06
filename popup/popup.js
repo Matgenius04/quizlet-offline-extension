@@ -170,11 +170,11 @@ let studyOptions = () => {
   let learnOption = document.createElement('button');
   //flashcards option
   flashCardOption.innerHTML = "Flashcards";
-  learnOption.innerHTML = "Learn"
+  learnOption.innerHTML = "Learn";
   matchingOption.innerHTML = "Matching";
   flashCardOption.id = 'flashcards-option';
   learnOption.id = 'learn-option';
-  matchingOption.id = 'matching-option'
+  matchingOption.id = 'matching-option';
   flashCardOption.onclick = ()=>{flashCardMode()};
   learnOption.onclick = ()=>{learnMode()};
   matchingOption.onclick = ()=>{matchingMode()};
@@ -189,30 +189,33 @@ let studyOptions = () => {
   flashcard.onclick = ()=>{
     if (term == true){
       flashCardFlip(x.set[setI].definitions[currentTermIndex]);
-      setTimeout(()=>{term = false;},10)
+      setTimeout(()=>{term = false;},1)
+      setTimeout(()=>{document.getElementById('flashcard').scrollTop = document.getElementById('flashcard').clientHeight+100;},animTime*3/10)
     }
     if (term == false){
       flashCardShow(x.set[setI].terms[currentTermIndex],true);
-      setTimeout(()=>{term = true;},10)
+      setTimeout(()=>{term = true;},1)
+      setTimeout(()=>{document.getElementById('flashcard').scrollTop = 1;},animTime*3/10)
     }
   }
   let flashCardShow = (string,transition) => {
     flashcard.id = 'flashcard';
     if (transition==true) {
-      flashcard.style = `transform: none; transition-duration:${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white;`;
+      
+      flashcard.style = `transform: none; transition-duration:${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
       setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; position:relative;">${string}<h3>`;},3*animTime/10)
     } else if (transition==false){
       flashcard.innerHTML = `<h3 style="text-align: center; position:relative;">${string}<h3>`;
-      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white;`;
+      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
     } else {
       flashcard.innerHTML = `<h3 style="text-align: center; position:relative;">${string}<h3>`;
-      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white;`;
+      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
     document.getElementById('flashcards').appendChild(flashcard)
   };
   }
   let flashCardFlip = string => {
     // flippedString = flipString(string.toLowerCase())
-    flashcard.style = `transform: rotateX(180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white;`;
+    flashcard.style = `transform: rotateX(180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
     setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; padding: 0px; position:relative; transform:rotateX(180deg);">${string}<h3>`;},3*animTime/10)
   }
 let flashCardMode = () => {
@@ -235,12 +238,14 @@ let flashCardMode = () => {
     currentTermIndex==x.set[setI].terms.length ? prevCard(): null;
     document.getElementById('flashcard').style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
   flashCardShow(x.set[setI].terms[currentTermIndex]);
+  document.getElementById('flashcard').scrollTop = 1;
   }
   let prevCard = ()=>{
     currentTermIndex += -1;
     currentTermIndex==-1 ? nextCard(): null;
     flashcard.style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
     flashCardShow(x.set[setI].terms[currentTermIndex]);
+    document.getElementById('flashcard').scrollTop = 1;
   }
   window.innerHeight/3
   next.style = `height: 40px; width: 40px; border-radius: 20px;position:relative;margin-right:0px;margin-left:${window.innerHeight/3}px;margin-top:15px;margin-bottom:15px;`;
@@ -265,11 +270,13 @@ let sigh = (e) => {
         // alert('up') //for testing
         if (term == true){
           flashCardFlip(x.set[setI].definitions[currentTermIndex]);
-          setTimeout(()=>{term = false;},10)
+          setTimeout(()=>{term = false;},1)
+          setTimeout(()=>{document.getElementById('flashcard').scrollTop = document.getElementById('flashcard').clientHeight+100;;},animTime*3/10)
         }
         if (term == false){
           flashCardShow(x.set[setI].terms[currentTermIndex],true);
-          setTimeout(()=>{term = true;},10)
+          setTimeout(()=>{term = true;},1)
+          setTimeout(()=>{document.getElementById('flashcard').scrollTop = 1;},animTime*3/10)
         }
       } else if (e.keyCode==39){
         //right
@@ -280,11 +287,13 @@ let sigh = (e) => {
         // alert('down') //for testing
         if (term == true){
           flashCardFlip(x.set[setI].definitions[currentTermIndex]);
-          setTimeout(()=>{term = false;},10)
+          setTimeout(()=>{term = false;},1)
+          setTimeout(()=>{document.getElementById('flashcard').scrollTop = document.getElementById('flashcard').clientHeight+100;;},animTime*3/10)
         }
         if (term == false){
           flashCardShow(x.set[setI].terms[currentTermIndex],true);
-          setTimeout(()=>{term = true;},10)
+          setTimeout(()=>{term = true;},1)
+          setTimeout(()=>{document.getElementById('flashcard').scrollTop = 1;},animTime*3/10)
         }
       }
   }
