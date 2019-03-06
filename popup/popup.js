@@ -349,19 +349,9 @@ function doLearnQ() {
   for (let i = 1; i < choices.childNodes.length; i += 2) {
     choices.childNodes[i].innerHTML = c.pop();
     if (choices.childNodes[i].innerHTML == questions[qi].a) {
-      choices.childNodes[i].removeEventListener("click", () => {
-        learnRight();
-      });
-      choices.childNodes[i].addEventListener("click", () => {
-        learnRight();
-      })
+      choices.childNodes[i].onclick = ()=>{learnRight()}
     } else {
-      choices.childNodes[i].removeEventListener("click", () => {
-        learnWrong(pq);
-      });
-      choices.childNodes[i].addEventListener("click", () => {
-        learnWrong(questions[qi].a);
-      })
+      choices.childNodes[i].onclick = ()=>{learnWrong(questions[qi].a)}
     }
   }
 }
