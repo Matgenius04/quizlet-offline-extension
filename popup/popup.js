@@ -5,8 +5,8 @@ let currentTermIndex;
 let quizletObjectStore;
 let keydownListener;
 const animTime = 500; //milleseconds
+let background = chrome.extension.getBackgroundPage();
 document.getElementById('openInNewTab').onclick = ()=>{
-  let background = chrome.extension.getBackgroundPage();
   background.openInNewTab();
 }
 //for reference this commented out code get's rid of the option buttons
@@ -82,7 +82,8 @@ window.addEventListener('load', () => {
 
 
   //add set on quizlet
-  let addSet = function () {
+  let addSet = () => {
+    // console.log('addSet')
     chrome.tabs.query({
       active: true,
       currentWindow: true
@@ -107,6 +108,7 @@ window.addEventListener('load', () => {
           let existingPos = `${x.name.indexOf(response.name)}`
           x.set[Number(existingPos)] = obj;
         }
+        background.altEval(x);
         loadedSet()
         // console.log(x)
       });
@@ -126,17 +128,16 @@ window.addEventListener('load', () => {
         button.id = 'getQuizletSet';
         button.innerHTML = 'Add this Quizlet Set';
         document.getElementsByTagName('body')[0].appendChild(button);
-        document.getElementsByTagName('button')[0].onclick = addSet
+        document.getElementById('getQuizletSet').onclick = ()=>{addSet()}
       }
     });
   });
 
 })
 
-window.addEventListener('unload', () => {
-  let background = chrome.extension.getBackgroundPage();
-  background.altEval(x) //send data for background script to process
-})
+// window.addEventListener('unload', () => {
+//   background.altEval(x) //send data for background script to process
+// })
 
 // Creates the dropdown menu
 function loadedSet() {
@@ -500,8 +501,11 @@ window.addEventListener('resize',()=>{
     flashCardWidth = 2*flashCardHeight;
     }
   }
+  if (document.getElementById('next')){
   document.getElementById('next').style = `height: ${flashCardButtonSize.height}px; width: ${flashCardButtonSize.width}px; border-radius: ${flashCardButtonSize.height}px;position:relative;margin-left:0px;margin-right:${window.innerWidth/3 - flashCardButtonSize.height}px;margin-top:15px;margin-bottom:15px;font-size:${flashCardTextSize};float:right`;
-  document.getElementById('back').style = `height: ${flashCardButtonSize.height}px; width: ${flashCardButtonSize.width}px; border-radius: ${flashCardButtonSize.height}px;position:relative;margin-right:0px;margin-left:${window.innerWidth/3 - flashCardButtonSize.height}px;margin-top:15px;margin-bottom:15px;font-size:${flashCardTextSize}`;
+  document.getElementById('back').style = `height: ${flashCardButtonSize.height}px; width: ${flashCardButtonSize.width}px; border-radius: ${flashCardButtonSize.height}px;position:relative;margin-right:0px;margin-left:${window.innerWidth/3 - flashCardButtonSize.height}px;margin-top:15px;margin-bottom:15px;font-size:${flashCardTextSize}`; 
   document.getElementById('flashcard').style.height = flashCardHeight;
-  document.getElementById('flashcard').style.width = flashCardWidth;
+  document.getElementById('flashcard').style.width = flashCardWidth;    
+  }
+
 })

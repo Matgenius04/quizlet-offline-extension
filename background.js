@@ -10,7 +10,6 @@ chrome.runtime.onInstalled.addListener(()=>{
 openInNewTab = () => {
     chrome.tabs.create({'url': chrome.extension.getURL('popup/popup.html')}, function(tab) {}); 
 }
-
 altEval = x => {
   console.log(x);
   let request = indexedDB.open('sets',1);
@@ -19,16 +18,6 @@ altEval = x => {
   }
   request.onsuccess = event => {
     let db = request.result;
-    let transaction = db.transaction('x','readwrite');
-    transaction.oncomplete = e => {
-      alert('opened transaction')
-    }
-  let objectStore = transaction.objectStore('x');
-  let objectStoreRequest = objectStore.get('0');
-  objectStoreRequest.onsuccess = e => {
-    objectStoreRequest.add(x);
-    alert('hope')
-  }
-    db.transaction('x',"readwrite").objectStore('x')
+    db.transaction('x',"readwrite").objectStore('x').put(x);
   }
 }
