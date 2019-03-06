@@ -4,6 +4,7 @@ let setI = 0;
 let currentTermIndex;
 let quizletObjectStore;
 let keydownListener;
+let questionies;
 const animTime = 500; //milleseconds
 document.getElementById('openInNewTab').onclick = ()=>{
   let background = chrome.extension.getBackgroundPage();
@@ -253,7 +254,7 @@ let studyOptions = () => {
   let flashCardShow = (string,transition) => {
     flashcard.id = 'flashcard';
     if (transition==true) {
-      
+
       flashcard.style = `transform: none; transition-duration:${animTime}ms; height:${flashCardHeight}px;width:${flashCardWidth}px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
       setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; position:relative; font-size:${flashCardTextSize}">${string}</h3>`;},3*animTime/10)
     } else if (transition==false){
@@ -294,13 +295,13 @@ let flashCardMode = () => {
     currentTermIndex==x.set[setI].terms.length ? prevCard(): null;
     document.getElementById('flashcard').style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
     flashCardShow(x.set[setI].terms[currentTermIndex]);
-    document.getElementById('flashcard').scrollTop = 1;   
+    document.getElementById('flashcard').scrollTop = 1;
     } else {
     currentTermIndex +=1;
     currentTermIndex==x.set[setI].terms.length ? prevCard(): null;
     document.getElementById('flashcard').style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
     flashCardShow(x.set[setI].terms[currentTermIndex]);
-    document.getElementById('flashcard').scrollTop = 1;      
+    document.getElementById('flashcard').scrollTop = 1;
     }
 
   }
@@ -382,24 +383,38 @@ function learnMode() {
   if (document.getElementById('studying-options-text')){
     document.getElementById('studying-options-text').remove()
   }
-  doLearnQ();
-}
-
-function doLearnQ() {
-  document.getElementById("learn-questions").hidden = false;
-  document.getElementById("correct").hidden = true;
-  document.getElementById("wrong").hidden = true;
-  let qs = [];
-  let progress = 0;
-  let questions = [];
+  questionies = [];
   for (let i = 0; i < x.set[setI].terms.length; i++) {
-    questions.push({
+    questionies.push({
       q: x.set[setI].terms[i],
       a: x.set[setI].definitions[i],
       amt: 0
     });
   }
-  let qi = randomI(questions);
+  doLearnQ(questionies);
+}
+
+function doLearnQ(questions) {
+  document.getElementById("learn-questions").hidden = false;
+  document.getElementById("correct").hidden = true;
+  document.getElementById("wrong").hidden = true;
+  let qs = [];
+  let progress = 0;
+  let random = [];
+  for (let i = 0; i < questions.length; i++) {
+    progress+=questions[i].amt;
+    for (let j = 0; j < 2-questions[i].amt; j++) {
+      random.push(i);
+    }
+  }
+
+  progress /= questions.length*2;
+  document.getElementById("progress").innerHTML = Math.round(progress*1000)/10+"%";
+
+  if (random.length <= 0) {
+    return;
+  }
+  let qi = random[randomI(random)];
   document.getElementById("question").innerHTML = questions[qi].q;
   let choices = document.getElementById("choices");
   choices.hidden = false
@@ -415,29 +430,35 @@ function doLearnQ() {
   for (let i = 1; i < choices.childNodes.length; i += 2) {
     choices.childNodes[i].innerHTML = c.pop();
     if (choices.childNodes[i].innerHTML == questions[qi].a) {
-      choices.childNodes[i].onclick = ()=>{learnRight()}
+      choices.childNodes[i].onclick = ()=>{learnRight(qi)}
     } else {
-      choices.childNodes[i].onclick = ()=>{learnWrong(questions[qi].a)}
+      choices.childNodes[i].onclick = ()=>{learnWrong(questions[qi].a, qi)}
     }
   }
 }
 
-function learnRight() {
+function learnRight(qi) {
   let e = document.getElementById("correct");
   document.getElementById("learn-questions").hidden = true;
   e.hidden = false;
   let compliments = ["Good job!", "CORRECT!", "You seem to have proven me wrong", "You're doing great!"]
   e.innerHTML = compliments[randomI(compliments)];
-  setTimeout(doLearnQ, 2000)
+  questionies[qi].amt++;
+  setTimeout(() => {
+    doLearnQ(questionies);
+  }, 2000)
 }
 
-function learnWrong(a) {
+function learnWrong(a, qi) {
   let e = document.getElementById("wrong");
   document.getElementById("learn-questions").hidden = true;
   e.hidden = false;
   let compliments = ["You seem to have proven me right", "Thats quite unfortunate", "OOF", "WRONG", "*insert wrong sound here*"];
   e.innerHTML = compliments[randomI(compliments)]+", the answer was actually "+'<br><br>' + `'${a}'`;
-  setTimeout(doLearnQ, 5000);
+  questionies[qi].amt--;
+  setTimeout(() => {
+    doLearnQ(questionies);
+  }, 4000);
   pq = a;
 }
 
@@ -472,10 +493,10 @@ function matchingMode() {
     let div = document.createElement('div');
     div.className = 'matching-div';
     matchingTermsLength = x.set[setI].length;
-    div.innerHTML = 
+    div.innerHTML =
     document.getElementById('matching-wrapper').appendChild(div)
   }
-  
+
 }
 
 window.addEventListener('resize',()=>{
