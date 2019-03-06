@@ -2,11 +2,11 @@
 <html>
 <meta charset="UTF-8">
 <head>
-    <style>html {background-color:rgb(245, 245, 245)}</style>
     <link rel='stylesheet'href='main.css' type="text/css">
 </head>
-<body style='overflow: hidden; height:100%'>
-    <h3>quizlet</h3>
+<body>
+  <button id='openInNewTab'>Open in new tab</button>
+    <h3>Offline Vocab Study</h3>
     <select id="set">
     </select>
     <!-- <button id="flashcards-button">Flashcards</button>
@@ -25,14 +25,12 @@
           <button style="width:100%;background-color:#EEAA7B;"></button>
           <button style="width:100%;background-color:#EEAA7B;"></button>
         </div>
-        <input type="text" id="text"></input>
+        <input type="text" id="text" hidden></input>
       </div>
       <p id="correct" hidden></p>
         <p id="wrong" hidden></p>
       </div>
-      <div id='match-wrapper' hidden>
-
-      </div>
+      <div id='matching-wrapper' hidden></div>
     <script src="popup.js"></script>
 </body>
 

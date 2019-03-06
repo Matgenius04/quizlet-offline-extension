@@ -1,0 +1,31 @@
+html {background-color:rgb(245, 245, 245)}
+body {overflow: hidden; height:100%}
+button {
+    margin-right: 5vw;
+    margin-top: 5vh;
+    height:auto;
+    width:auto;
+    border-style: solid;
+    border-width: 3px;
+    border-color: #07889B;
+    border-radius: 5px;
+}
+#flashcard-wrapper {
+    width:auto;
+    margin:auto;
+}
+/* #flashcards {
+    width:100%;
+    margin:auto;
+} */
+#flashcard {
+    margin:auto;
+}
+text {
+    color:white;
+}
+#openInNewTab {
+    position: absolute;
+    top:3vh;
+    right:3vw;
+}

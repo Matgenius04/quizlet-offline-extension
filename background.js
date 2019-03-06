@@ -7,6 +7,10 @@ chrome.runtime.onInstalled.addListener(()=>{
         }]);
       });
 });
+openInNewTab = () => {
+    chrome.tabs.create({'url': chrome.extension.getURL('popup/popup.html')}, function(tab) {}); 
+}
+
 altEval = x => {
   console.log(x);
   let request = indexedDB.open('sets',1);

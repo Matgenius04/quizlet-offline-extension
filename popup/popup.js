@@ -5,6 +5,26 @@ let currentTermIndex;
 let quizletObjectStore;
 let keydownListener;
 const animTime = 500; //milleseconds
+document.getElementById('openInNewTab').onclick = ()=>{
+  let background = chrome.extension.getBackgroundPage();
+  background.openInNewTab();
+}
+//for reference this commented out code get's rid of the option buttons
+
+// if (document.getElementById('flashcards-option')){
+//   document.getElementById('flashcards-option').remove()
+// }
+// if (document.getElementById('learn-option')){
+//   document.getElementById('learn-option').remove()
+// }
+// if (document.getElementById('matching-option')){
+//   document.getElementById('matching-option').remove()
+// }
+// if (document.getElementById('studying-options-text')){
+//   document.getElementById('studying-options-text').remove()
+// }
+
+
 x = {
   name: [],
   set: []
@@ -149,6 +169,9 @@ let studyOptions = () => {
   if (document.getElementById('matching-option')){
     document.getElementById('matching-option').remove()
   }
+  if (document.getElementById('studying-options-text')){
+    document.getElementById('studying-options-text').remove()
+  }
   if (document.getElementById('flashcard')){
       document.getElementById('flashcard').remove()
   }
@@ -168,7 +191,7 @@ let studyOptions = () => {
   let flashCardOption = document.createElement('button');
   let matchingOption = document.createElement('button');
   let learnOption = document.createElement('button');
-  //flashcards option
+  //studying options
   flashCardOption.innerHTML = "Flashcards";
   learnOption.innerHTML = "Learn";
   matchingOption.innerHTML = "Matching";
@@ -178,14 +201,43 @@ let studyOptions = () => {
   flashCardOption.onclick = ()=>{flashCardMode()};
   learnOption.onclick = ()=>{learnMode()};
   matchingOption.onclick = ()=>{matchingMode()};
+  let text = document.createElement('h4');
+  text.innerHTML = 'Studying Options';
+  text.id = 'studying-options-text'
+  document.getElementsByTagName('body')[0].appendChild(text)
   document.getElementsByTagName('body')[0].appendChild(flashCardOption);
   document.getElementsByTagName('body')[0].appendChild(learnOption);
   document.getElementsByTagName('body')[0].appendChild(matchingOption);
-  //end of flashcards option
+  //end of options
 }
 //FLASHCARDS MODE
   let flashcard = document.createElement('div');
   let term = true;
+  let flashCardHeight;
+  let flashCardWidth;
+  let flashCardTextSize;
+  let flashCardButtonSize = {height:40,width:40};
+  if (window.innerHeight<400 || window.innerWidth<400) {
+    flashCardHeight = 100;
+    flashCardWidth = 200;
+    flashCardTextSize = '';
+    flashCardButtonSize.height = 40;
+    flashCardButtonSize.width = 40;
+  } else {
+    if (window.innerHeight>window.innerWidth) {
+      flashCardButtonSize.height = window.innerWidth/5;
+      flashCardButtonSize.width = window.innerWidth/5;
+      flashCardTextSize = `${window.innerWidth/16}px`;
+      flashCardHeight = 1/2 * window.innerWidth;
+      flashCardWidth = 2*flashCardHeight;
+    } else {
+    flashCardButtonSize.height = window.innerHeight/5;
+    flashCardButtonSize.width = window.innerHeight/5;
+    flashCardTextSize = `${window.innerHeight/16}px`;
+    flashCardHeight = 1/2 * window.innerHeight;
+    flashCardWidth = 2*flashCardHeight;
+    }
+  }
   flashcard.onclick = ()=>{
     if (term == true){
       flashCardFlip(x.set[setI].definitions[currentTermIndex]);
@@ -202,21 +254,21 @@ let studyOptions = () => {
     flashcard.id = 'flashcard';
     if (transition==true) {
       
-      flashcard.style = `transform: none; transition-duration:${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
-      setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; position:relative;">${string}<h3>`;},3*animTime/10)
+      flashcard.style = `transform: none; transition-duration:${animTime}ms; height:${flashCardHeight}px;width:${flashCardWidth}px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
+      setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; position:relative; font-size:${flashCardTextSize}">${string}</h3>`;},3*animTime/10)
     } else if (transition==false){
-      flashcard.innerHTML = `<h3 style="text-align: center; position:relative;">${string}<h3>`;
-      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
+      flashcard.innerHTML = `<h3 style="text-align: center; position:relative; font-size:${flashCardTextSize}">${string}</h3>`;
+      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:${flashCardHeight}px;width:${flashCardWidth}px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
     } else {
-      flashcard.innerHTML = `<h3 style="text-align: center; position:relative;">${string}<h3>`;
-      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
+      flashcard.innerHTML = `<h3 style="text-align: center; position:relative; font-size:${flashCardTextSize}">${string}</h3>`;
+      flashcard.style = `transform: rotate3d(0,0,0,180deg); transition-duration: ${animTime}ms; height:${flashCardHeight}px;width:${flashCardWidth}px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
     document.getElementById('flashcards').appendChild(flashcard)
   };
   }
   let flashCardFlip = string => {
     // flippedString = flipString(string.toLowerCase())
-    flashcard.style = `transform: rotateX(180deg); transition-duration: ${animTime}ms; height:100px;width:200px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
-    setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; padding: 0px; position:relative; transform:rotateX(180deg);">${string}<h3>`;},3*animTime/10)
+    flashcard.style = `transform: rotateX(180deg); transition-duration: ${animTime}ms; height:${flashCardHeight}px;width:${flashCardWidth}px; border-style: solid; background-color:white; overflow-y:scroll !important;`;
+    setTimeout(()=>{flashcard.innerHTML = `<h3 style="text-align: center; padding: 0px; position:relative; transform:rotateX(180deg); font-size:${flashCardTextSize}">${string}</h3>`;},3*animTime/10)
   }
 let flashCardMode = () => {
   if (document.getElementById('flashcards-option')){
@@ -228,17 +280,29 @@ let flashCardMode = () => {
   if (document.getElementById('matching-option')){
     document.getElementById('matching-option').remove()
   }
+  if (document.getElementById('studying-options-text')){
+    document.getElementById('studying-options-text').remove()
+  }
   console.log('flashcard option selected')
   currentTermIndex = 0;
   flashCardShow(x.set[setI].terms[currentTermIndex]);
   let next = document.createElement('button');
   let back = document.createElement('button');
   let nextCard = ()=>{
+    if (term == false) {
     currentTermIndex +=1;
     currentTermIndex==x.set[setI].terms.length ? prevCard(): null;
     document.getElementById('flashcard').style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
-  flashCardShow(x.set[setI].terms[currentTermIndex]);
-  document.getElementById('flashcard').scrollTop = 1;
+    flashCardShow(x.set[setI].terms[currentTermIndex]);
+    document.getElementById('flashcard').scrollTop = 1;   
+    } else {
+    currentTermIndex +=1;
+    currentTermIndex==x.set[setI].terms.length ? prevCard(): null;
+    document.getElementById('flashcard').style = `transform: translate(-100px,0px); transition-duration: ${animTime}ms`;
+    flashCardShow(x.set[setI].terms[currentTermIndex]);
+    document.getElementById('flashcard').scrollTop = 1;      
+    }
+
   }
   let prevCard = ()=>{
     currentTermIndex += -1;
@@ -247,12 +311,11 @@ let flashCardMode = () => {
     flashCardShow(x.set[setI].terms[currentTermIndex]);
     document.getElementById('flashcard').scrollTop = 1;
   }
-  window.innerHeight/3
-  next.style = `height: 40px; width: 40px; border-radius: 20px;position:relative;margin-right:0px;margin-left:${window.innerHeight/3}px;margin-top:15px;margin-bottom:15px;`;
+  next.style = `height: ${flashCardButtonSize.height}px; width: ${flashCardButtonSize.width}px; border-radius: ${flashCardButtonSize.height/2}px;position:relative;margin-right:${window.innerWidth/3 - flashCardButtonSize.height}px;margin-left:0px;margin-top:15px;margin-bottom:15px;float:right;font-size:${flashCardTextSize}`;
   next.innerHTML = ">";
   next.id = 'next';
   next.onclick = ()=>{nextCard();}
-  back.style = `height: 40px; width: 40px; border-radius: 20px;position:relative;margin-right:0px;margin-left:${window.innerHeight/3}px;margin-top:15px;margin-bottom:15px;`;
+  back.style = `height: ${flashCardButtonSize.height}px; width: ${flashCardButtonSize.width}px; border-radius: ${flashCardButtonSize.height/2}px;position:relative;margin-right:0px;margin-left:${window.innerWidth/3 - flashCardButtonSize.height}px;margin-top:15px;margin-bottom:15px;font-size:${flashCardTextSize}`;
   back.innerHTML = "<";
   back.id = 'back';
   back.onclick = ()=>{prevCard()}
@@ -270,13 +333,13 @@ let sigh = (e) => {
         // alert('up') //for testing
         if (term == true){
           flashCardFlip(x.set[setI].definitions[currentTermIndex]);
-          setTimeout(()=>{term = false;},1)
-          setTimeout(()=>{document.getElementById('flashcard').scrollTop = document.getElementById('flashcard').clientHeight+100;;},animTime*3/10)
-        }
-        if (term == false){
+          term = false;
+          // setTimeout(()=>{term = false;},1)
+          setTimeout(()=>{document.getElementById('flashcard').scrollTop = document.getElementById('flashcard').clientHeight+100;},animTime*3/10);
+        } else if (term == false){
           flashCardShow(x.set[setI].terms[currentTermIndex],true);
           setTimeout(()=>{term = true;},1)
-          setTimeout(()=>{document.getElementById('flashcard').scrollTop = 1;},animTime*3/10)
+          setTimeout(()=>{document.getElementById('flashcard').scrollTop = 1;},animTime*3/10);
         }
       } else if (e.keyCode==39){
         //right
@@ -315,6 +378,9 @@ function learnMode() {
   }
   if (document.getElementById('matching-option')){
     document.getElementById('matching-option').remove()
+  }
+  if (document.getElementById('studying-options-text')){
+    document.getElementById('studying-options-text').remove()
   }
   doLearnQ();
 }
@@ -370,7 +436,7 @@ function learnWrong(a) {
   document.getElementById("learn-questions").hidden = true;
   e.hidden = false;
   let compliments = ["You seem to have proven me right", "Thats quite unfortunate", "OOF", "WRONG", "*insert wrong sound here*"];
-  e.innerHTML = compliments[randomI(compliments)]+", the answer was actually "+a;
+  e.innerHTML = compliments[randomI(compliments)]+", the answer was actually "+'<br><br>' + `'${a}'`;
   setTimeout(doLearnQ, 5000);
   pq = a;
 }
@@ -381,3 +447,61 @@ function randomI(a) {
 //END LEARN MODE
 
 //MATCHING MODE
+function matchingMode() {
+  if (document.getElementById('flashcards-option')){
+    document.getElementById('flashcards-option').remove()
+  }
+  if (document.getElementById('learn-option')){
+    document.getElementById('learn-option').remove()
+  }
+  if (document.getElementById('matching-option')){
+    document.getElementById('matching-option').remove()
+  }
+  if (document.getElementById('studying-options-text')){
+    document.getElementById('studying-options-text').remove()
+  }
+  document.getElementById('matching-wrapper').style = 'display:block;height:500px;width:1280px';
+  let matchingQuestionsDone = 0;
+  let matchingTermsLength = x.set[setI].length;
+  if (matchingTermsLength > 15){
+    matchingTermsLength = 15;
+  } else {
+    matchingTermsLength = x.set[setI].terms.length;
+  }
+  for (let x=0;x<matchingTermsLength;x++){
+    let div = document.createElement('div');
+    div.className = 'matching-div';
+    matchingTermsLength = x.set[setI].length;
+    div.innerHTML = 
+    document.getElementById('matching-wrapper').appendChild(div)
+  }
+  
+}
+
+window.addEventListener('resize',()=>{
+  if (window.innerHeight<300 || window.innerWidth<400) {
+    flashCardHeight = 100;
+    flashCardWidth = 200;
+    flashCardTextSize = '';
+    flashCardButtonSize.height = 40;
+    flashCardButtonSize.width = 40;
+  } else {
+    if (window.innerHeight>window.innerWidth) {
+      flashCardButtonSize.height = window.innerWidth/5;
+      flashCardButtonSize.width = window.innerWidth/5;
+      flashCardTextSize = `${window.innerWidth/16}px`;
+      flashCardHeight = 1/2 * window.innerWidth;
+      flashCardWidth = 2*flashCardHeight;
+    } else {
+    flashCardButtonSize.height = window.innerHeight/5;
+    flashCardButtonSize.width = window.innerHeight/5;
+    flashCardTextSize = `${window.innerHeight/16}px`;
+    flashCardHeight = 1/2 * window.innerHeight;
+    flashCardWidth = 2*flashCardHeight;
+    }
+  }
+  document.getElementById('next').style = `height: ${flashCardButtonSize.height}px; width: ${flashCardButtonSize.width}px; border-radius: ${flashCardButtonSize.height}px;position:relative;margin-left:0px;margin-right:${window.innerWidth/3 - flashCardButtonSize.height}px;margin-top:15px;margin-bottom:15px;font-size:${flashCardTextSize};float:right`;
+  document.getElementById('back').style = `height: ${flashCardButtonSize.height}px; width: ${flashCardButtonSize.width}px; border-radius: ${flashCardButtonSize.height}px;position:relative;margin-right:0px;margin-left:${window.innerWidth/3 - flashCardButtonSize.height}px;margin-top:15px;margin-bottom:15px;font-size:${flashCardTextSize}`;
+  document.getElementById('flashcard').style.height = flashCardHeight;
+  document.getElementById('flashcard').style.width = flashCardWidth;
+})
